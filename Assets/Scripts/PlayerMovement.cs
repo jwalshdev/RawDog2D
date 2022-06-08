@@ -5,13 +5,17 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rigidBody;
+    private BoxCollider2D boxCollider;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private float dirX;
     private enum MovementState { idle, running, jumping, falling };
 
+    [SerializeField] private LayerMask jumpableGround;
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float jumpForce = 14f;
+
+    private int jumpCount = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -29,7 +34,16 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            rigidBody.velocity = new Vector2(rigidBody.velocity.x, jumpForce);
+            if (IsGrounded())
+            {
+                rigidBody.velocity = new Vector2(rigidBody.velocity.x, jumpForce);
+                jumpCount = 1;
+            }
+            else if (jumpCount > 0)
+            {
+                rigidBody.velocity = new Vector2(rigidBody.velocity.x, jumpForce);
+                jumpCount--;
+            }           
         }
 
         UpdateAnimationState();
@@ -64,5 +78,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
         animator.SetInteger("playerState", (int)state);
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0f, Vector2.down, .1f, jumpableGround);
     }
 }
