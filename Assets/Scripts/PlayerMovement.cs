@@ -15,10 +15,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float jumpForce = 14f;
 
-    private int jumpCount = 1;
+    private int jumpCount = 0;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -27,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         dirX = Input.GetAxisRaw("Horizontal");
         rigidBody.velocity = new Vector2(dirX*moveSpeed, rigidBody.velocity.y);
