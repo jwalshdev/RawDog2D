@@ -37,19 +37,32 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimationState()
     {
+        MovementState state;
+
         if (dirX > 0f)
         {
-            animator.SetBool("isRunning", true);
+            state = MovementState.running;
             spriteRenderer.flipX = false;
         }
         else if (dirX < 0f)
         {
-            animator.SetBool("isRunning", true);
+            state = MovementState.running;
             spriteRenderer.flipX = true;
         }
         else
         {
-            animator.SetBool("isRunning", false);
+            state = MovementState.idle;
         }
+
+        if (rigidBody.velocity.y > .1f)
+        {
+            state = MovementState.jumping;
+        }
+        else if (rigidBody.velocity.y < -.1f)
+        {
+            state = MovementState.falling;
+        }
+
+        animator.SetInteger("playerState", (int)state);
     }
 }
